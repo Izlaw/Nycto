@@ -1,0 +1,10 @@
+# Build artifacts
+[Bb]in/
+[Oo]bj/
+
+# Scraper artifacts & scripts
+downloaded_emojis/
+scripts/
+
+# Secrets
+appsettings.json
