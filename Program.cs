@@ -24,14 +24,14 @@ public class Program
                 services.AddSingleton(new DiscordSocketConfig
                 {
                     GatewayIntents = GatewayIntents.None,
-                    LogLevel = LogSeverity.Info,
+                    LogLevel = LogSeverity.Warning,
                 });
 
                 services.AddSingleton<DiscordSocketClient>();
                 
                 services.AddSingleton(new InteractionServiceConfig
                 {
-                    LogLevel = LogSeverity.Info,
+                    LogLevel = LogSeverity.Warning,
                     UseCompiledLambda = true
                 });
 
