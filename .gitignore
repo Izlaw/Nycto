@@ -8,3 +8,6 @@ scripts/
 
 # Secrets
 appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+Properties/launchSettings.json

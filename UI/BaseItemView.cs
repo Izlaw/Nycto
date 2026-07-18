@@ -45,7 +45,7 @@ public abstract class BaseItemView
             .WithFooter("Data provided by warframestat.us");
 
         embed.AddField("Category", string.IsNullOrEmpty(item.Category) ? "N/A" : item.Category, true);
-        embed.AddField("Type", string.IsNullOrEmpty(item.Type) ? "N/A" : item.Type, true);
+        // embed.AddField("Type", string.IsNullOrEmpty(item.Type) ? "N/A" : item.Type, true);
 
         if (!string.IsNullOrEmpty(item.Polarity)) embed.AddField("💠 Polarity", Nycto.Helper.EmojiMapper.GetPolarityString(item.Polarity), true);
         if (!string.IsNullOrEmpty(item.Rarity)) embed.AddField("✨ Rarity", item.Rarity, true);
@@ -103,14 +103,15 @@ public abstract class BaseItemView
             {
                 if (element.ValueKind != System.Text.Json.JsonValueKind.Null && element.ValueKind != System.Text.Json.JsonValueKind.Undefined)
                 {
-                    textBlocks.Add($"**{displayName}:** {element}");
+                    string valStr = FormatStatValue(jsonKey, element);
+                    textBlocks.Add($"**{displayName}:** {valStr}");
                 }
             }
         }
 
         if (textBlocks.Any())
         {
-            embed.AddField(sectionTitle, string.Join(" | ", textBlocks), false);
+            embed.AddField(sectionTitle, string.Join("\n", textBlocks), false);
         }
     }
 
@@ -124,22 +125,62 @@ public abstract class BaseItemView
             {
                 var damageBlocks = new List<string>();
 
+                double totalDamage = 0;
+                foreach (var prop in damageTypesElement.EnumerateObject())
+                {
+                    if (prop.Name.Equals("total", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (prop.Value.TryGetDouble(out double v)) totalDamage += v;
+                }
+
                 foreach (var prop in damageTypesElement.EnumerateObject())
                 {
                     if (prop.Name.Equals("total", StringComparison.OrdinalIgnoreCase)) continue;
 
                     if (prop.Value.TryGetDouble(out double dmgValue) && dmgValue > 0)
                     {
-                        string formattedElement = EmojiMapper.GetElementString(prop.Name);
-                        damageBlocks.Add($"**{formattedElement}:** {dmgValue}");
+                        string fullString = EmojiMapper.GetElementString(prop.Name);
+                        string emojiOnly = fullString.Split(' ')[0]; 
+                        
+                        double percentage = totalDamage > 0 ? (dmgValue / totalDamage) * 100 : 0;
+                        damageBlocks.Add($"{emojiOnly} {dmgValue} ({percentage:F2}%)");
                     }
                 }
 
                 if (damageBlocks.Any())
                 {
-                    embed.AddField("⚔️ Elemental Damage", string.Join("\n", damageBlocks), true);
+                    embed.AddField("Elemental Damage", string.Join(" | ", damageBlocks), false);
                 }
             }
         }
+    }
+
+    private static string FormatStatValue(string jsonKey, System.Text.Json.JsonElement element)
+    {
+        string valStr = element.ToString();
+
+        if (jsonKey == "criticalChance" || jsonKey == "procChance")
+        {
+            if (element.TryGetDouble(out double d)) return $"{d * 100:F2}%";
+        }
+        else if (jsonKey == "criticalMultiplier") return $"{valStr}x";
+        else if (jsonKey == "reloadTime") return $"{valStr} s";
+        else if (jsonKey == "accuracy")
+        {
+            if (element.TryGetDouble(out double acc))
+            {
+                string desc = "Very Low";
+                if (acc >= 100) desc = "Very High";
+                else if (acc >= 50) desc = "High";
+                else if (acc >= 16) desc = "Medium";
+                else if (acc >= 9) desc = "Low";
+                return $"{desc} ({valStr})";
+            }
+        }
+        else if (jsonKey == "exilusPolarity")
+        {
+            return EmojiMapper.GetPolarityString(valStr);
+        }
+
+        return valStr;
     }
 }
