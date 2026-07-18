@@ -1,6 +1,4 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json.Serialization;
-using Nycto.Domain;
+﻿using Nycto.Domain;
 
 namespace Nycto.Services;
 
@@ -23,7 +21,7 @@ public class WarframeAPIService
             return null;
         }
 
-        var options = new System.Text.Json.JsonSerializerOptions();
+        var options = new JsonSerializerOptions();
         options.Converters.Add(new Nycto.Helper.ItemModelConverter());
 
         var items = await response.Content.ReadFromJsonAsync<ItemModel[]>(options);
@@ -61,7 +59,7 @@ public class WarframeAPIService
             return Enumerable.Empty<ItemModel>();
         }
 
-        var options = new System.Text.Json.JsonSerializerOptions();
+        var options = new JsonSerializerOptions();
         options.Converters.Add(new Nycto.Helper.ItemModelConverter());
 
         var items = await response.Content.ReadFromJsonAsync<ItemModel[]>(options);

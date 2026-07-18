@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Nycto.Domain;
+﻿namespace Nycto.Domain;
 
 public class WeaponModel : ItemModel
 {

@@ -6,7 +6,7 @@ namespace Nycto.UI;
 
 public static class WarframeView
 {
-    public static Embed CreateWarframeEmbed(ItemModel baseItem)
+    public static Embed CreateWarframeEmbed(ItemModel baseItem, string locale = "en-US")
     {
         var embed = BaseItemView.CreateBaseEmbed(baseItem);
 

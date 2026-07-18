@@ -6,7 +6,7 @@ namespace Nycto.UI;
 
 public static class ItemView
 {
-    public static Embed CreateItemEmbed(ItemModel item)
+    public static Embed CreateItemEmbed(ItemModel item, string locale = "en-US")
     {
         var embed = BaseItemView.CreateBaseEmbed(item);
         

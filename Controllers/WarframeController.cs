@@ -1,4 +1,4 @@
-﻿using Nycto.Domain;
+using Nycto.Domain;
 using Discord;
 using Discord.Interactions;
 using Nycto.Services;
@@ -30,7 +30,7 @@ public class WarframeController : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
-        var embed = Nycto.UI.SearchResultSelector.CreateEmbed(item);
+        var embed = Nycto.UI.SearchResultSelector.CreateEmbed(item, Context.Interaction.UserLocale);
 
         await FollowupAsync(embed: embed);
     }

@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using System.Collections.Generic;
-
-namespace Nycto.Domain;
+﻿namespace Nycto.Domain;
 
 public class WarframeModel : ItemModel
 {

@@ -1,0 +1,17 @@
+global using System;
+global using System.Text;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.RegularExpressions;
+global using System.Net.Http.Json;
+global using System.Globalization;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Discord;
+global using Discord.Interactions;
+global using Discord.WebSocket;
+global using Nycto.Domain;
+global using Nycto.Helper;
+global using Nycto.Services;
+global using Nycto.UI;

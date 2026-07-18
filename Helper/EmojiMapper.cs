@@ -63,7 +63,7 @@ public static class EmojiMapper
     {
         if (string.IsNullOrWhiteSpace(text)) return text;
 
-        return System.Text.RegularExpressions.Regex.Replace(text, @"<(DT|POLARITY)_([A-Z_]+)>", match =>
+        return Regex.Replace(text, @"<(DT|POLARITY)_([A-Z_]+)>", match =>
         {
             var prefix = match.Groups[1].Value;
             var tag = match.Groups[2].Value;

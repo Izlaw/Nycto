@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using System.Collections.Generic;
-
 namespace Nycto.Domain;
 
 public class ItemModel
@@ -30,7 +27,7 @@ public class ItemModel
     public string Rarity { get; set; } = string.Empty;
 
     [JsonExtensionData]
-    public Dictionary<string, System.Text.Json.JsonElement>? AdditionalData { get; set; }
+    public Dictionary<string, JsonElement>? AdditionalData { get; set; }
 
     [JsonPropertyName("components")] public List<Component>? Components { get; set; }
     [JsonPropertyName("drops")] public List<Drop>? Drops { get; set; }

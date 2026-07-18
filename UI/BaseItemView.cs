@@ -18,10 +18,10 @@ public abstract class BaseItemView
             _ => Color.DarkPurple
         };
 
-        string description = item.Description;
+        string description = item.Description?.Replace("\\n", "\n").Replace("\\r", "");
         if (string.IsNullOrEmpty(description) && item.LevelStats != null && item.LevelStats.Any())
         {
-            var listBuilder = new System.Text.StringBuilder();
+            var listBuilder = new StringBuilder();
             
             for (int i = 0; i < item.LevelStats.Count; i++)
             {
@@ -33,7 +33,7 @@ public abstract class BaseItemView
                 }
             }
             
-            description = EmojiMapper.ReplaceEmojiTags(listBuilder.ToString());
+            description = EmojiMapper.ReplaceEmojiTags(listBuilder.ToString()).Replace("\\n", "\n").Replace("\\r", "");
         }
 
         var embed = new EmbedBuilder()
@@ -45,10 +45,9 @@ public abstract class BaseItemView
             .WithFooter("Data provided by warframestat.us");
 
         embed.AddField("Category", string.IsNullOrEmpty(item.Category) ? "N/A" : item.Category, true);
-        // embed.AddField("Type", string.IsNullOrEmpty(item.Type) ? "N/A" : item.Type, true);
 
-        if (!string.IsNullOrEmpty(item.Polarity)) embed.AddField("💠 Polarity", Nycto.Helper.EmojiMapper.GetPolarityString(item.Polarity), true);
-        if (!string.IsNullOrEmpty(item.Rarity)) embed.AddField("✨ Rarity", item.Rarity, true);
+        if (!string.IsNullOrEmpty(item.Polarity)) embed.AddField("Polarity", EmojiMapper.GetPolarityString(item.Polarity), true);
+        if (!string.IsNullOrEmpty(item.Rarity)) embed.AddField("Rarity", item.Rarity, true);
 
         return embed;
     }
@@ -88,7 +87,7 @@ public abstract class BaseItemView
         }
     }
 
-    public static void AddDynamicStats(EmbedBuilder embed, ItemModel item, string sectionTitle, Dictionary<string, string> statMapping)
+    public static void AddDynamicStats(EmbedBuilder embed, ItemModel item, string sectionTitle, Dictionary<string, string> statMapping, string locale = "en-US")
     {
         if (item.AdditionalData == null) return;
 
@@ -101,9 +100,9 @@ public abstract class BaseItemView
 
             if (item.AdditionalData.TryGetValue(jsonKey, out var element))
             {
-                if (element.ValueKind != System.Text.Json.JsonValueKind.Null && element.ValueKind != System.Text.Json.JsonValueKind.Undefined)
+                if (element.ValueKind != JsonValueKind.Null && element.ValueKind != JsonValueKind.Undefined)
                 {
-                    string valStr = FormatStatValue(jsonKey, element);
+                    string valStr = FormatStatValue(jsonKey, element, locale);
                     textBlocks.Add($"**{displayName}:** {valStr}");
                 }
             }
@@ -115,13 +114,15 @@ public abstract class BaseItemView
         }
     }
 
-    public static void AddDamageTypes(EmbedBuilder embed, ItemModel item)
+    public static void AddDamageTypes(EmbedBuilder embed, ItemModel item, string locale = "en-US")
     {
         if (item.AdditionalData == null) return;
 
+        var culture = new CultureInfo(locale);
+
         if (item.AdditionalData.TryGetValue("damage", out var damageTypesElement))
         {
-            if (damageTypesElement.ValueKind == System.Text.Json.JsonValueKind.Object)
+            if (damageTypesElement.ValueKind == JsonValueKind.Object)
             {
                 var damageBlocks = new List<string>();
 
@@ -141,8 +142,8 @@ public abstract class BaseItemView
                         string fullString = EmojiMapper.GetElementString(prop.Name);
                         string emojiOnly = fullString.Split(' ')[0]; 
                         
-                        double percentage = totalDamage > 0 ? (dmgValue / totalDamage) * 100 : 0;
-                        damageBlocks.Add($"{emojiOnly} {dmgValue} ({percentage:F2}%)");
+                        double percentage = totalDamage > 0 ? (dmgValue / totalDamage) : 0;
+                        damageBlocks.Add($"{emojiOnly} {dmgValue.ToString("G", culture)} ({percentage.ToString("P2", culture)})");
                     }
                 }
 
@@ -154,16 +155,23 @@ public abstract class BaseItemView
         }
     }
 
-    private static string FormatStatValue(string jsonKey, System.Text.Json.JsonElement element)
+    private static string FormatStatValue(string jsonKey, JsonElement element, string locale = "en-US")
     {
+        var culture = new CultureInfo(locale);
         string valStr = element.ToString();
 
         if (jsonKey == "criticalChance" || jsonKey == "procChance")
         {
-            if (element.TryGetDouble(out double d)) return $"{d * 100:F2}%";
+            if (element.TryGetDouble(out double d)) return d.ToString("P2", culture);
         }
-        else if (jsonKey == "criticalMultiplier") return $"{valStr}x";
-        else if (jsonKey == "reloadTime") return $"{valStr} s";
+        else if (jsonKey == "criticalMultiplier") 
+        {
+            if (element.TryGetDouble(out double d)) return $"{d.ToString("G", culture)}x";
+        }
+        else if (jsonKey == "reloadTime") 
+        {
+            if (element.TryGetDouble(out double d)) return $"{d.ToString("G", culture)} s";
+        }
         else if (jsonKey == "accuracy")
         {
             if (element.TryGetDouble(out double acc))
@@ -173,12 +181,27 @@ public abstract class BaseItemView
                 else if (acc >= 50) desc = "High";
                 else if (acc >= 16) desc = "Medium";
                 else if (acc >= 9) desc = "Low";
-                return $"{desc} ({valStr})";
+                return $"{desc} ({acc.ToString("G", culture)})";
             }
         }
         else if (jsonKey == "exilusPolarity")
         {
             return EmojiMapper.GetPolarityString(valStr);
+        }
+        else if (jsonKey == "releaseDate" || jsonKey.Contains("Date", StringComparison.OrdinalIgnoreCase))
+        {
+            if (DateTime.TryParse(valStr, out DateTime dt))
+            {
+                return dt.ToString("d", culture); 
+            }
+        }
+        else if (element.ValueKind == JsonValueKind.Number)
+        {
+            if (element.TryGetDouble(out double d))
+            {
+                if (d % 1 == 0) return d.ToString("N0", culture);
+                return d.ToString("G", culture);
+            }
         }
 
         return valStr;

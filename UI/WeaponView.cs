@@ -6,7 +6,7 @@ namespace Nycto.UI;
 
 public static class WeaponView
 {
-    public static Embed CreateWeaponEmbed(ItemModel item)
+    public static Embed CreateWeaponEmbed(ItemModel item, string locale = "en-US")
     {
         var embed = BaseItemView.CreateBaseEmbed(item);
 
@@ -16,7 +16,7 @@ public static class WeaponView
             { "masteryReq", "Mastery Rank Requirement" },
             { "trigger", "Trigger Type" }
         };
-        BaseItemView.AddDynamicStats(embed, item, "General Information", generalInfo);
+        BaseItemView.AddDynamicStats(embed, item, "General Information", generalInfo, locale);
 
         var utilityStats = new Dictionary<string, string>
         {
@@ -27,7 +27,7 @@ public static class WeaponView
             { "magazineSize", "Magazine Size" },
             { "reloadTime", "Reload Time" }
         };
-        BaseItemView.AddDynamicStats(embed, item, "Utility", utilityStats);
+        BaseItemView.AddDynamicStats(embed, item, "Utility", utilityStats, locale);
 
         var attackStats = new Dictionary<string, string>
         {
@@ -43,7 +43,7 @@ public static class WeaponView
             { "spread", "Spread" },
             { "projectile", "Projectile Type" }
         };
-        BaseItemView.AddDynamicStats(embed, item, "Normal Attack", attackStats);
+        BaseItemView.AddDynamicStats(embed, item, "Normal Attack", attackStats, locale);
 
         var miscStats = new Dictionary<string, string>
         {
@@ -51,9 +51,9 @@ public static class WeaponView
             { "releaseDate", "Introduced" },
             { "buildPrice", "Build Price" }
         };
-        BaseItemView.AddDynamicStats(embed, item, "Miscellaneous", miscStats);
+        BaseItemView.AddDynamicStats(embed, item, "Miscellaneous", miscStats, locale);
 
-        BaseItemView.AddDamageTypes(embed, item);
+        BaseItemView.AddDamageTypes(embed, item, locale);
 
         BaseItemView.AddDropLocations(embed, item);
 

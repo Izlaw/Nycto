@@ -1,8 +1,8 @@
 # Nycto - Warframe Wiki Searcher in Discord
 
-Nycto is a Discord "User App" that pulls Warframe item and mod data directly from the Warframe Wiki (using the WarframeStat.us API). 
+Nycto is a Discord App that pulls Warframe item and mod data directly from the Warframe Wiki (using the WarframeStat.us API). 
 
-You just authorize it to your Discord account once, and you can use the `/wf` command in any server, group chat, or DM.
+Just authorize it to your Discord account once, and you can use the `/wf` command in any server, group chat, or DM.
 
 ## Tech Stack
 - C# / .NET 9

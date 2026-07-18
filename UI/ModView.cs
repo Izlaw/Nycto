@@ -5,7 +5,7 @@ namespace Nycto.UI;
 
 public static class ModView
 {
-    public static Embed CreateModEmbed(ItemModel item)
+    public static Embed CreateModEmbed(ItemModel item, string locale = "en-US")
     {
         var embed = BaseItemView.CreateBaseEmbed(item);
         
