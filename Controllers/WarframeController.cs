@@ -30,7 +30,7 @@ public class WarframeController : InteractionModuleBase<SocketInteractionContext
             return;
         }
 
-        var embed = Nycto.UI.SearchResultSelector.CreateEmbed(item, Context.Interaction.UserLocale);
+        var embed = SearchResultSelector.CreateEmbed(item, Context.Interaction.UserLocale);
 
         await FollowupAsync(embed: embed);
     }

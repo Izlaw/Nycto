@@ -1,4 +1,4 @@
-﻿using Nycto.Domain;
+using Nycto.Domain;
 
 namespace Nycto.Services;
 
@@ -38,14 +38,7 @@ public class WarframeAPIService
     {
         if (string.IsNullOrWhiteSpace(query))
         {
-            return new ItemModel[]
-            {
-                new WarframeModel { Name = "Excalibur" },
-                new WarframeModel { Name = "Rhino" },
-                new WarframeModel { Name = "Volt" },
-                new WarframeModel { Name = "Mag" },
-                new WarframeModel { Name = "Wisp" }
-            };
+            return Enumerable.Empty<ItemModel>();
         }
 
         if (query.Length < 2) 
